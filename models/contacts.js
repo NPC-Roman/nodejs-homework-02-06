@@ -1,60 +1,32 @@
-const e = require("express");
-const fs = require("fs/promises");
+const { Schema, model } = require("mongoose");
+const Joi = require("joi");
 
-const path = require("path");
-const { v4 } = require("uuid");
+const contactSchema = Schema({
+  name: {
+    type: String,
+    required: [true, "Set name for contact"],
+  },
+  email: {
+    type: String,
+  },
+  phone: {
+    type: String,
+  },
+  favorite: {
+    type: Boolean,
+    default: false,
+  },
+});
 
-const contactsPath = path.join(__dirname, "contacts.json");
+const joiSchema = Joi.object({
+  name: Joi.string().min(3).max(30).required(),
+  email: Joi.string().required(),
+  phone: Joi.required(),
+  favorite: Joi.bool(),
+});
 
-const listContacts = async () => {
-  const data = await fs.readFile(contactsPath);
-  const contacts = JSON.parse(data);
-  return contacts;
-};
+const joiSchemaFavorite = Joi.object({ favorite: Joi.bool().required() });
 
-const getContactById = async (contactId) => {
-  const contacts = await listContacts();
-  const result = contacts.find((contact) => contact.id === contactId);
-  if (!result) {
-    return null;
-  }
-  return result;
-};
+const Contact = model("contact", contactSchema);
 
-const removeContact = async (contactId) => {
-  const contacts = await listContacts();
-  const filterContact = contacts.filter((contact) => contact.id !== contactId);
-  await fs.writeFile(contactsPath, JSON.stringify(filterContact));
-};
-
-const addContact = async ({ name, email, phone }) => {
-  const contacts = await listContacts();
-  const newContact = {
-    id: v4(),
-    name,
-    email,
-    phone,
-  };
-  contacts.push(newContact);
-  await fs.writeFile(contactsPath, JSON.stringify(contacts));
-  return newContact;
-};
-
-const updateContact = async (contactId, { name, email, phone }) => {
-  const contacts = await listContacts();
-  const index = contacts.findIndex((contact) => contact.id === contactId);
-  if (index === -1) {
-    return null;
-  }
-  contacts[index] = { contactId, name, email, phone };
-  await fs.writeFile(contactsPath, JSON.stringify(contacts));
-  return contacts[index];
-};
-
-module.exports = {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
-};
+module.exports = { Contact, joiSchema, joiSchemaFavorite };
