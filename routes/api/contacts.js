@@ -9,18 +9,20 @@ const {
   updateStatusContact,
 } = require("../../controllers/index");
 
+const { isValidId } = require("../../middlewars/isValidId");
+
 const router = express.Router();
 
 router.get("/", getAllContacts);
 
-router.get("/:contactId", getById);
+router.get("/:contactId", isValidId, getById);
 
 router.post("/", newContact);
 
-router.delete("/:contactId", removeById);
+router.delete("/:contactId", isValidId, removeById);
 
-router.put("/:contactId", updById);
+router.put("/:contactId", isValidId, updById);
 
-router.patch("/:contactId/favorite", updateStatusContact);
+router.patch("/:contactId/favorite", isValidId, updateStatusContact);
 
 module.exports = router;
