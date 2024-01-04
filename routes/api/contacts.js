@@ -9,15 +9,16 @@ const {
   updateStatusContact,
 } = require("../../controllers/index");
 
-const auth = require("../../midddlewars/auth");
+const isValidId = require("../../midddlewars/isValidId");
+const authenticate = require("../../midddlewars/authenticate");
 
 const router = express.Router();
 
-router.get("/", auth, getAllContacts);
+router.get("/", isValidId, getAllContacts);
 
 router.get("/:contactId", getById);
 
-router.post("/", auth, newContact);
+router.post("/", isValidId, newContact);
 
 router.delete("/:contactId", removeById);
 
