@@ -3,9 +3,13 @@ import logger from "morgan";
 import cors from "cors";
 import "dotenv/config";
 
+import authRouter from "./project-backend/routes/api/auth-router.js";
+import moviesRouter from "./project-backend/routes/api/movies-router.js";
+
+/*
 import authRouter from "./routes/api/auth-router.js";
 import moviesRouter from "./routes/api/movies-router.js";
-
+*/
 const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
