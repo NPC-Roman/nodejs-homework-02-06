@@ -5,15 +5,21 @@ import { HttpError } from "../helpers/index.js";
 import { ctrlWrapper } from "../decorators/index.js";
 
 const getAll = async (req, res) => {
-  const result = await Movie.find({}, "-createdAt -updatedAt");
+  const { _id: owner } = req.user;
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (page - 1) * limit;
+  const result = await Movie.find({ owner }, "-createdAt -updatedAt", {
+    skip,
+    limit,
+  }).populate("owner", "username");
 
   res.json(result);
 };
 
 const getById = async (req, res) => {
-  const { id } = req.params;
-  // const result = await Movie.findOne({_id: id});
-  const result = await Movie.findById(id);
+  const { id: _id } = req.params;
+  const { _id: owner } = req.user;
+  const result = await User.findOne({ _id, owner });
   if (!result) {
     throw HttpError(404, `Movie with id=${id} not found`);
   }
@@ -22,14 +28,16 @@ const getById = async (req, res) => {
 };
 
 const add = async (req, res) => {
-  const result = await Movie.create(req.body);
+  const { _id: owner } = req.user;
+  const result = await Movie.create({ ...req.body, owner });
 
   res.status(201).json(result);
 };
 
 const updateById = async (req, res) => {
-  const { id } = req.params;
-  const result = await Movie.findByIdAndUpdate(id, req.body);
+  const { id: _id } = req.params;
+  const { _id: owner } = req.user;
+  const result = await Movie.findOneAndUpdate({ _id, owner }, req.body);
   if (!result) {
     throw HttpError(404, `Movie with id=${id} not found`);
   }
@@ -38,13 +46,12 @@ const updateById = async (req, res) => {
 };
 
 const deleteById = async (req, res) => {
-  const { id } = req.params;
-  const result = await Movie.findByIdAndDelete(id);
+  const { id: _id } = req.params;
+  const { _id: owner } = req.user;
+  const result = await Movie.findOneAndDelete({ _id, owner });
   if (!result) {
     throw HttpError(404, `Movie with id=${id} not found`);
   }
-
-  // res.status(204).send()
 
   res.json({
     message: "Delete success",

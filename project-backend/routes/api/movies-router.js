@@ -2,7 +2,11 @@ import express from "express";
 
 import moviesController from "../../controllers/movies-controller.js";
 
-import { isEmptyBody, isValidId } from "../../middlewares/index.js";
+import {
+  authenticate,
+  isEmptyBody,
+  isValidId,
+} from "../../middlewares/index.js";
 
 import { validateBody } from "../../decorators/index.js";
 
@@ -13,6 +17,8 @@ import {
 } from "../../models/Movie.js";
 
 const moviesRouter = express.Router();
+
+moviesRouter.use(authenticate);
 
 moviesRouter.get("/", moviesController.getAll);
 
