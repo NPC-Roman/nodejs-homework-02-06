@@ -1,3 +1,4 @@
+![1](https://github.com/NPC-Roman/nodejs-homework-02-06/assets/128088564/0ddf8db2-5e46-4376-91a3-14b04d7de895)
 ## GoIT Node.js Course Template Homework
 
 Виконайте форк цього репозиторію для виконання домашніх завдань (2-6)
